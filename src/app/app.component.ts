@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthService} from './service/auth.service';
+import { ChatService } from './service/chat.service';
 
 @Component({
   selector: 'app-root',
@@ -7,6 +8,10 @@ import { AuthService} from './service/auth.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  constructor(public auth: AuthService) {
+  userChats$;
+  constructor(public auth: AuthService, public cs: ChatService) {}
+
+  ngOnInit() {
+    this.userChats$ = this.cs.getUserChats();
   }
 }

@@ -1,34 +1,33 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to !
-  </h1>
-  <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
+<h1>Angular firestore chat app demo</h1>
+
+<div class="login">
+  <div *ngIf=" auth.user$ | async as user; else login">
+    <img [src]="user.photoURL" width="50px">
+    <p>
+      <span class="tag is-dark">{{ user.displayName }}</span>
+      <span class="tag is-light">{{ user.uid }}</span>
+    </p>
+
+
+    <button class="button is-small" (click)="auth.signOut()">Sign Out</button>
+    <hr>
+
+    <button class="button" routerLink="/chats/UJrR0M10IK7VJDVCQIKF">Join Chat</button>
+    <button class="button is-info" (click)="cs.create()">Create New Chat</button>
+
+    <hr>
+
+    <h3>My Chats</h3>
+
+    <ul>
+      <li *ngFor="let chat of userChats$ | async">
+        <a [routerLink]="'chats/' + chat.id">{{ chat.id }} - {{ chat.messages.length }} Messages </a>
+      </li>
+    </ul>
+  </div>
+
+  <ng-template #login>
+    <button class="button" (click)="auth.googleSignIn()">Login with Google</button>
+  </ng-template>
+
 </div>
-<h2>Here are some links to help you start: </h2>
-<ul>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/cli">CLI Documentation</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-  </li>
-</ul>
-
-
-<div *ngIf="auth.user$ | async as user; else login">
-  {{ user | json}}
-  <hr>
-  <button class="but†on" (click)="auth.signOut()">Sign Out</button>
-</div>
-
-<ng-template #login>
-  <button class="button" (click)="auth.googleSignin()">
-    Google login
-  </button>
-</ng-template>
-
-<router-outlet></router-outlet>

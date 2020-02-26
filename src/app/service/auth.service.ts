@@ -33,11 +33,9 @@ export class AuthService {
     return this.user$.pipe(first()).toPromise();
   }
 
-  async googleSignin() {
+  googleSignIn() {
     const provider = new auth.GoogleAuthProvider();
-    const credential = await this.afAuth.auth.signInWithPopup(provider);
-
-    return this.updateUserData(credential.user);
+    return this.oAuthLogin(provider);
   }
 
   private async oAuthLogin(provider) {
