@@ -21,7 +21,7 @@ export class AuthService {
     this.user$ = this.afAuth.authState.pipe(
       switchMap(user => {
         if (user) {
-          return this.afs.doc<User>(`users/${user.uid}`).valueChanges();
+          return this.afs.doc<User>(`users/${user.uid}`).snapshotChanges();
         } else {
           return of(null);
         }
@@ -37,7 +37,7 @@ export class AuthService {
   }
 
   private updateUserData(user) {
-    const userRef: AngularFirestoreDocument<User> = this.afs.doc(`users/${user.id}`);
+    const userRef: AngularFirestoreDocument<User> = this.afs.doc(`users/${user.uid}`);
 
     const data = {
       uid: user.uid,
@@ -46,7 +46,7 @@ export class AuthService {
       photoURL: user.photoURL
     };
 
-    return userRef.set(data, { merge: true });
+    return userRef.set(data);
   }
 
   async signOut() {
