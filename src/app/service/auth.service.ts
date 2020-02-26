@@ -4,7 +4,7 @@ import { auth } from 'firebase/app';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { Observable, of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, first } from 'rxjs/operators';
 import { User } from '../model/user.model';
 
 @Injectable({
@@ -21,7 +21,7 @@ export class AuthService {
     this.user$ = this.afAuth.authState.pipe(
       switchMap(user => {
         if (user) {
-          return this.afs.doc<User>(`users/${user.uid}`).snapshotChanges();
+          return this.afs.doc<User>(`users/${user.uid}`).valueChanges();
         } else {
           return of(null);
         }
@@ -29,10 +29,19 @@ export class AuthService {
     );
   }
 
+  getUser() {
+    return this.user$.pipe(first()).toPromise();
+  }
+
   async googleSignin() {
     const provider = new auth.GoogleAuthProvider();
     const credential = await this.afAuth.auth.signInWithPopup(provider);
 
+    return this.updateUserData(credential.user);
+  }
+
+  private async oAuthLogin(provider) {
+    const credential = await this.afAuth.auth.signInWithPopup(provider);
     return this.updateUserData(credential.user);
   }
 
@@ -46,7 +55,7 @@ export class AuthService {
       photoURL: user.photoURL
     };
 
-    return userRef.set(data);
+    return userRef.set(data, {merge: true});
   }
 
   async signOut() {
