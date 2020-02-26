@@ -12,12 +12,13 @@
 
         <div class="messages-box">
           <div class="list-group rounded-0">
+
             <div *ngFor="let chat of allChats; let i = index;">
               <a class="list-group-item list-group-item-action active text-white rounded-0">
                 <div class="media"><img [src]="chat.author.photoURL" alt="user" width="50" class="rounded-circle">
                   <div class="media-body ml-4">
                     <div class="d-flex align-items-center justify-content-between mb-1">
-                      <h6 class="mb-0"></h6><small class="small font-weight-bold">25 Dec</small>
+                      <h6 class="mb-0"></h6><small class="small font-weight-bold">{{ chat.createdAt | date: 'yyyy-MM-dd'}}</small>
                     </div>
                     <p class="font-italic mb-0 text-small">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore.</p>
                   </div>
@@ -33,14 +34,14 @@
     <div class="col-7 px-0">
       <div class="px-4 py-5 chat-box bg-white">
         <!-- Sender Message-->
-        <div class="media w-50 mb-3"><img src="https://res.cloudinary.com/mhmd/image/upload/v1564960395/avatar_usae7z.svg" alt="user" width="50" class="rounded-circle">
+        <!-- <div class="media w-50 mb-3" *ngFor="let msg of chat.messages; trackBy: trackByCreated"><img [src]="msg.user?.photoURL" alt="user" width="50" class="rounded-circle">
           <div class="media-body ml-3">
             <div class="bg-light rounded py-2 px-3 mb-2">
-              <p class="text-small mb-0 text-muted">Test which is a new approach all solutions</p>
+              <p class="text-small mb-0 text-muted">{{ msg.content }}</p>
             </div>
-            <p class="small text-muted">12:00 PM | Aug 13</p>
+            <p class="small text-muted">{{msg.createdAt | date: 'yyyy/MM/dd h:mm:ss a'}}</p>
           </div>
-        </div>
+        </div> -->
 
         <!-- Reciever Message-->
         <div class="media w-50 ml-auto mb-3">

@@ -32,28 +32,6 @@ export class ChatService {
     return this.afs
       .collection('chats')
       .valueChanges();
-
-    // return this.afs
-    //       .collection('chats')
-    //       .snapshotChanges()
-    //       .pipe(
-    //         map(actions => {
-    //           return actions.map(chat => {
-    //             return this.afs
-    //             .collection('users')
-    //             .doc(chat.payload.doc.get('uid'))
-    //             .snapshotChanges()
-    //             .pipe(
-    //                 map(user => {
-    //                   return {
-    //                     id: chat.payload.doc.id,
-    //                     ...chat.payload.doc.data() as {},
-    //                     ...user.payload.data() as {}};
-    //                 })
-    //             )
-    //           });
-    //         })
-    //       );
   }
 
   getUserChats() {
@@ -123,7 +101,6 @@ export class ChatService {
   }
 
   joinUsers(chat$: Observable<any>) {
-    console.log('JOINING USERS!!!');
     let chat;
     const joinKeys = {};
 

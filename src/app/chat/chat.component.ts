@@ -15,9 +15,9 @@ import { User } from '../model/user.model';
 })
 export class ChatComponent implements OnInit {
   allChats = new Array<Chat>();
-  chatAuthor = new Array<User>(); //Array contain chat authors observeble
   currentChat$: Observable<any>;
   newMsg: string;
+  currentchat$;
 
   constructor(
     public chatService: ChatService,
@@ -30,19 +30,17 @@ export class ChatComponent implements OnInit {
      this.chatService.getAllChats().subscribe(chats => {
         this.allChats = chats as Chat[];
         for (let i = 0; i < chats.length; i++) {
-          let chat = chats[i] as Chat
+          let chat = chats[i] as Chat;
           this.userService.getUserProfile(chat.uid).subscribe(user => {
             this.allChats[i].author = user as User;
-          })
+          });
         }
      });
+  }
 
-
-
-
-    // const chatId = this.route.snapshot.paramMap.get('id');
-    // const source = this.cs.get(chatId);
-    // this.chat$ = this.cs.joinUsers(source);
+  onChatRoomClick(chatId) {
+    const source = this.chatService.getChat(chatId);
+    this.currentchat$ = this.chatService.joinUsers(source);
   }
 
   submit(chatId) {
