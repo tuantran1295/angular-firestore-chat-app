@@ -28,6 +28,24 @@ export class ChatService {
       );
   }
 
+  getAllChats() {
+    return this.auth.user$.pipe(
+      switchMap(user => {
+        return this.afs
+          .collection('chats').snapshotChanges()
+          .pipe(
+            map(actions => {
+              return actions.map(a => {
+                const data: Object = a.payload.doc.data();
+                const id = a.payload.doc.id;
+                return { id, ...data };
+              });
+            })
+          );
+      })
+    );
+  }
+
   getUserChats() {
     return this.auth.user$.pipe(
       switchMap(user => {
@@ -94,6 +112,7 @@ export class ChatService {
   }
 
   joinUsers(chat$: Observable<any>) {
+    console.log('JOINING USERS!!!');
     let chat;
     const joinKeys = {};
 

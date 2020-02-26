@@ -1,32 +1,26 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router } from '@angular/router';
+import {
+  CanActivate,
+  ActivatedRouteSnapshot,
+  RouterStateSnapshot,
+  Router
+} from '@angular/router';
 import { Observable } from 'rxjs';
-import { CanActivate } from '@angular/router/src/utils/preactivation';
 import { AuthService } from './auth.service';
-import { tap, map, take } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
-
-export class AuthGuard implements CanActivate  {
-  path: ActivatedRouteSnapshot[];
-  route: ActivatedRouteSnapshot;
-  constructor(
-    private auth: AuthService,
-    private router: Router
-  ) {
-
+export class AuthGuard implements CanActivate {
+  constructor(private auth: AuthService, private router: Router) {}
+  async canActivate(
+    next: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): Promise<boolean> {
+    const user = await this.auth.getUser();
+    if (!user) {
+      this.router.navigate(['/']);
+    }
+    return !!user;
   }
-  canActivate(next, state): Observable<boolean> {
-    return this.auth.user$.pipe(
-      take(1), map(user => !!user), tap(loggedIn => {
-        if (!loggedIn) {
-          this.router.navigate(['/']);
-        }
-      })
-    );
-  }
-
-
 }
