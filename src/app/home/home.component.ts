@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
 import { AuthService } from '../service/auth.service';
-import { ChatService } from '../service/chat.service';
 
 @Component({
   selector: 'app-home',
@@ -8,13 +8,19 @@ import { ChatService } from '../service/chat.service';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  userChats$;
-
-  constructor(public auth: AuthService, public cs: ChatService) {
+  constructor(
+    private route: Router,
+    private auth: AuthService
+  ) {
   }
 
   ngOnInit() {
-    this.userChats$ = this.cs.getAllChats();
+    this.auth.user$.subscribe(user => {
+      console.log(user);
+      if (user) {
+        this.route.navigate(['/chats']);
+      }
+    });
   }
 
 }

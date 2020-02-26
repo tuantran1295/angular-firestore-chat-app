@@ -16,7 +16,7 @@ export class ChatService {
     private router: Router
   ) {}
 
-  get(chatId) {
+  getChat(chatId) {
     return this.afs
       .collection<any>('chats')
       .doc(chatId)
@@ -29,21 +29,31 @@ export class ChatService {
   }
 
   getAllChats() {
-    return this.auth.user$.pipe(
-      switchMap(user => {
-        return this.afs
-          .collection('chats').snapshotChanges()
-          .pipe(
-            map(actions => {
-              return actions.map(a => {
-                const data: Object = a.payload.doc.data();
-                const id = a.payload.doc.id;
-                return { id, ...data };
-              });
-            })
-          );
-      })
-    );
+    return this.afs
+      .collection('chats')
+      .valueChanges();
+
+    // return this.afs
+    //       .collection('chats')
+    //       .snapshotChanges()
+    //       .pipe(
+    //         map(actions => {
+    //           return actions.map(chat => {
+    //             return this.afs
+    //             .collection('users')
+    //             .doc(chat.payload.doc.get('uid'))
+    //             .snapshotChanges()
+    //             .pipe(
+    //                 map(user => {
+    //                   return {
+    //                     id: chat.payload.doc.id,
+    //                     ...chat.payload.doc.data() as {},
+    //                     ...user.payload.data() as {}};
+    //                 })
+    //             )
+    //           });
+    //         })
+    //       );
   }
 
   getUserChats() {
@@ -65,7 +75,7 @@ export class ChatService {
     );
   }
 
-  async create() {
+  async createChatRoom() {
     const { uid } = await this.auth.getUser();
 
     const data = {
@@ -77,7 +87,8 @@ export class ChatService {
 
     const docRef = await this.afs.collection('chats').add(data);
 
-    return this.router.navigate(['chats', docRef.id]);
+    return docRef.id;
+    // return this.router.navigate(['chats', docRef.id]);
   }
 
   async sendMessage(chatId, content) {
@@ -128,7 +139,7 @@ export class ChatService {
         return userDocs.length ? combineLatest(userDocs) : of([]);
       }),
       map(arr => {
-        arr.forEach(v => (joinKeys[(<any>v).uid] = v));
+        arr.forEach(v => (joinKeys[( v as any).uid] = v));
         chat.messages = chat.messages.map(v => {
           return { ...v, user: joinKeys[v.uid] };
         });
