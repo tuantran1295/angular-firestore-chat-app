@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable, observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { first, map } from 'rxjs/operators';
 import { ChatService } from '../service/chat.service';
 import { ActivatedRoute } from '@angular/router';
@@ -14,7 +14,7 @@ import { User } from '../model/user.model';
   styleUrls: ['./chat.component.css']
 })
 export class ChatComponent implements OnInit {
-  allChats = new Array<Chat>();
+  allChats = [];
   currentChat$: Observable<any>;
   newMsg: string;
   currentchat$;
@@ -28,14 +28,23 @@ export class ChatComponent implements OnInit {
 
   ngOnInit() {
      this.chatService.getAllChats().subscribe(chats => {
-        this.allChats = chats as Chat[];
-        for (let i = 0; i < chats.length; i++) {
-          let chat = chats[i] as Chat;
+       console.log(chats);
+       this.allChats = chats;
+        // set currentChat as first chat
+       this.joinFirstChat();
+       for (let i = 0; i < chats.length; i++) {
+          const chat = chats[i] as Chat;
           this.userService.getUserProfile(chat.uid).subscribe(user => {
             this.allChats[i].author = user as User;
           });
         }
      });
+  }
+
+  joinFirstChat() {
+    this.currentChat$ = of(this.allChats[0]);
+
+    // console.log(this.allChats);
   }
 
   onChatRoomClick(chatId) {

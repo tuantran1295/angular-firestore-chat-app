@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { firestore } from 'firebase/app';
 import { map, switchMap } from 'rxjs/operators';
 import { Observable, combineLatest, of } from 'rxjs';
+import { Chat } from '../model/chat.model';
 
 @Injectable({
   providedIn: 'root'
@@ -29,9 +30,30 @@ export class ChatService {
   }
 
   getAllChats() {
-    return this.afs
-      .collection('chats')
-      .valueChanges();
+    return this.auth.user$.pipe(
+      switchMap(user => {
+        return this.afs
+          .collection<Chat>('chats')
+          .snapshotChanges()
+          .pipe(
+            map(actions => {
+              return actions.map(a => {
+                const chat = new Chat();
+                chat.id = a.payload.doc.id;
+                chat.count = a.payload.doc.get('count');
+                chat.createdAt = a.payload.doc.get('createdAt');
+                chat.messages = a.payload.doc.get('messages');
+                chat.uid = a.payload.doc.get('uid');
+                return chat;
+
+                // const data: Object = a.payload.doc.data();
+                // const id = a.payload.doc.id;
+                // return { id, ...data };
+              });
+            })
+          );
+      })
+    );
   }
 
   getUserChats() {
