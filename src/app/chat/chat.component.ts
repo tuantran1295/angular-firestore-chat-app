@@ -18,6 +18,7 @@ export class ChatComponent implements OnInit {
   currentChat;
   newMsg: string;
   currentUser;
+  isFirstChat = true;
 
   constructor(
     public chatService: ChatService,
@@ -31,23 +32,26 @@ export class ChatComponent implements OnInit {
   ngOnInit() {
      this.chatService.getAllChats().subscribe(chats => {
        console.log(chats);
-       this.allChats = chats;
-        // set currentChat as first chat
-       this.joinFirstChat();
-       for (let i = 0; i < chats.length; i++) {
-          const chat = chats[i] as Chat;
-          this.userService.getUserProfile(chat.uid).subscribe(user => {
-            this.allChats[i].author = user as User;
-          });
-        }
+       if (this.isFirstChat) {
+        this.allChats = chats;
+        this.joinFirstChat();  // set currentChat as first chat
+        for (let i = 0; i < chats.length; i++) {
+            const chat = chats[i] as Chat;
+            this.userService.getUserProfile(chat.uid).subscribe(user => {
+              this.allChats[i].author = user as User;
+            });
+          }
+      }
      });
   }
 
   joinFirstChat() {
+    this.isFirstChat = false;
     this.onChatRoomClick(this.allChats[0].id, 0);
   }
 
   onChatRoomClick(chatId, index) {
+    console.log('On chat room clicked!');
     const source = this.chatService.getChat(chatId);
     this.chatService.joinUsers(source).subscribe(chat => {
       this.currentChat = chat;
@@ -61,7 +65,7 @@ export class ChatComponent implements OnInit {
     this.allChats[index].active = true;
   }
 
-  isMyMessage(uid){
+  isMyMessage(uid) {
     return this.currentUser.uid == uid;
   }
 
