@@ -17,14 +17,16 @@ export class ChatComponent implements OnInit {
   allChats = [];
   currentChat;
   newMsg: string;
-
+  currentUser;
 
   constructor(
     public chatService: ChatService,
     private route: ActivatedRoute,
     public auth: AuthService,
     public userService: UserService
-  ) {}
+  ) {
+    this.auth.getUser().then(user => this.currentUser = user);
+  }
 
   ngOnInit() {
      this.chatService.getAllChats().subscribe(chats => {
@@ -57,6 +59,10 @@ export class ChatComponent implements OnInit {
       }
     }
     this.allChats[index].active = true;
+  }
+
+  isMyMessage(uid){
+    return this.currentUser.uid == uid;
   }
 
   submit(chatId) {
