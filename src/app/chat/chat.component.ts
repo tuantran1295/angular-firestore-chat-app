@@ -15,9 +15,9 @@ import { User } from '../model/user.model';
 })
 export class ChatComponent implements OnInit {
   allChats = [];
-  currentChat$: Observable<any>;
+  currentChat;
   newMsg: string;
-  currentchat$;
+
 
   constructor(
     public chatService: ChatService,
@@ -42,17 +42,27 @@ export class ChatComponent implements OnInit {
   }
 
   joinFirstChat() {
-    this.currentChat$ = of(this.allChats[0]);
-
-    // console.log(this.allChats);
+    this.onChatRoomClick(this.allChats[0].id, 0);
   }
 
-  onChatRoomClick(chatId) {
+  onChatRoomClick(chatId, index) {
     const source = this.chatService.getChat(chatId);
-    this.currentchat$ = this.chatService.joinUsers(source);
+    this.chatService.joinUsers(source).subscribe(chat => {
+      this.currentChat = chat;
+    });
+
+    for (let i = 0; i < this.allChats.length; i++) {
+      if (this.allChats[i].active) {
+        this.allChats[i].active = false;
+      }
+    }
+    this.allChats[index].active = true;
   }
 
   submit(chatId) {
+    if (!this.newMsg) {
+      return alert('you need to enter something');
+    }
     this.chatService.sendMessage(chatId, this.newMsg);
     this.newMsg = '';
   }
